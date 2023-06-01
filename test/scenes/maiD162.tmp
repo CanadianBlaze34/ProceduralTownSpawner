@@ -1,0 +1,44 @@
+[gd_scene load_steps=11 format=3 uid="uid://medvp812sviv"]
+
+[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_dsq71"]
+[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_w7wqw"]
+[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_4ml2q"]
+[ext_resource type="Script" path="res://test/scripts/tile_base.gd" id="4_iwjos"]
+[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="5_yapf7"]
+[ext_resource type="Script" path="res://test/scripts/quit.gd" id="6_rixqg"]
+[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="7_ncr2o"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ienwp"]
+frequency = 0.015
+
+[sub_resource type="Resource" id="Resource_7anr3"]
+script = ExtResource("4_iwjos")
+source_id = 0
+atlas_coords = Vector2i(0, 0)
+alternative_tile = 0
+
+[sub_resource type="Resource" id="Resource_kr5nk"]
+script = ExtResource("4_iwjos")
+source_id = 0
+atlas_coords = Vector2i(1, 0)
+alternative_tile = 0
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_dsq71")
+
+[node name="TerrainMap" parent="." instance=ExtResource("2_w7wqw")]
+tile_set = ExtResource("3_4ml2q")
+_noise = SubResource("FastNoiseLite_ienwp")
+_grass_tile = SubResource("Resource_7anr3")
+_water_tile = SubResource("Resource_kr5nk")
+
+[node name="Player" parent="." instance=ExtResource("5_yapf7")]
+motion_mode = 1
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="Quit" type="Node" parent="."]
+script = ExtResource("6_rixqg")
+
+[node name="TownSpawner" type="Node2D" parent="."]
+script = ExtResource("7_ncr2o")

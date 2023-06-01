@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://3gk86d65v0xm"]
+
+[ext_resource type="Script" path="res://test/scripts/terrain_map.gd" id="1_dk2io"]
+
+[node name="TerrainMap" type="TileMap"]
+format = 2
+script = ExtResource("1_dk2io")

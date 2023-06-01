@@ -1,0 +1,44 @@
+[gd_scene load_steps=12 format=3 uid="uid://medvp812sviv"]
+
+[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_lf62h"]
+[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_45tr3"]
+[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_c3d3i"]
+[ext_resource type="Resource" uid="uid://ddffuth882b12" path="res://test/resources/Tiles/grass_tile.tres" id="4_kiuai"]
+[ext_resource type="Resource" uid="uid://cqiyllnyrm467" path="res://test/resources/Tiles/water_tile.tres" id="5_24rom"]
+[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="6_2050n"]
+[ext_resource type="Script" path="res://test/scripts/quit.gd" id="7_8g0gc"]
+[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="8_1nh6n"]
+[ext_resource type="FastNoiseLite" uid="uid://bf1q2skx4l2e0" path="res://test/resources/Noise/random.tres" id="9_5tg3b"]
+[ext_resource type="Script" path="res://scripts/town_generator.gd" id="9_her6r"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ienwp"]
+frequency = 0.015
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_lf62h")
+
+[node name="TerrainMap" parent="." instance=ExtResource("2_45tr3")]
+tile_set = ExtResource("3_c3d3i")
+_noise = SubResource("FastNoiseLite_ienwp")
+_grass_tile = ExtResource("4_kiuai")
+_water_tile = ExtResource("5_24rom")
+
+[node name="Player" parent="." instance=ExtResource("6_2050n")]
+motion_mode = 1
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="Quit" type="Node" parent="."]
+script = ExtResource("7_8g0gc")
+
+[node name="TownSpawner" type="Node2D" parent="." node_paths=PackedStringArray("town_generator")]
+script = ExtResource("8_1nh6n")
+town_generator = NodePath("../TownGenerator")
+random = ExtResource("9_5tg3b")
+
+[node name="TownGenerator" type="Node" parent="." node_paths=PackedStringArray("tile_map")]
+script = ExtResource("9_her6r")
+_grass_tile = ExtResource("4_kiuai")
+_water_tile = ExtResource("5_24rom")
+tile_map = NodePath("../TerrainMap")
+random = ExtResource("9_5tg3b")
