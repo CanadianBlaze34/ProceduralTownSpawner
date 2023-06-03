@@ -59,7 +59,8 @@ func _update_cells_in_rect(map_size : Vector2i, edge_padding : int) -> void:
 	var visible_map := Rect2i(_map_position - v_edge_padding, map_size + v_edge_padding)
 	
 	# clear all tiles/cells in the tilemap
-	clear()
+#	clear()
+	clear_layer(0)
 	
 #	print("visible map %v %v" % [visible_map.position, visible_map.end])
 	for y in range(visible_map.position.y, visible_map.end.y + 1):

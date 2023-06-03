@@ -7,7 +7,9 @@ class_name TownSpawner extends Node2D
 @export var tile_placement : TilePlacement
 @export var random := FastNoiseLite.new()
 
-var towns : Dictionary = {}
+var towns : Dictionary = {} 
+# Dictionary[Vector2i, Array[Node2D, Dictionary[TileBase, Array[Vector2i]]]]
+# towns[chunk_position, Array[town, tiles[TileBase, cell_positions]]]
 
 signal town_added(town)
 signal town_removed(town)
@@ -17,16 +19,24 @@ func map_update(visible_cell_area : Rect2i) -> void:
 	visible_chunk_area.end = to_chunk_position(visible_cell_area.end)
 	# include the edge of the area
 	visible_chunk_area.size += Vector2i.ONE
-#	print(visible_cell_area)
-#	print(visible_chunk_area)
+#	print("visible cell area: ", visible_cell_area, " E: %v" % visible_cell_area.end)
+#	print("visible chunk area: ", visible_chunk_area, " E: %v" % visible_chunk_area.end)
+	
 	_spawn_towns(visible_chunk_area)
 	_remove_towns(visible_chunk_area)
 
 
 func _place_town_tiles(tiles : Dictionary) -> void:
 	# parameters should have the tiles to place and the layers to place the tiles in
-	tile_placement.place_ground_tiles(tiles["ground"])
-#	tile_placement.place_object_tiles(town["object"])
+	tile_placement.place_tiles(tiles["ground"], "ground")
+#	tile_placement.place_tiles(tiles["object"], "object")
+	pass
+
+
+func _remove_town_tiles(tiles : Dictionary) -> void:
+	# parameters should have the tiles to place and the layers to place the tiles in
+	tile_placement.remove_tiles(tiles["ground"], "ground")
+#	tile_placement.remove_tiles(tiles["object"], "object")
 	pass
 
 
@@ -38,16 +48,15 @@ func _spawn_towns(visible_chunk_area : Rect2i) -> void:
 			var chunk_position := Vector2i(x, y)
 			
 			if town_at(chunk_position) and not chunk_position in towns:
-				print("add: %v" % chunk_position)
-				
+				print("add town to chunk: %v" % chunk_position)
 				
 				var town_and_tiles : Array = town_generator.generate_town(chunk_position, spawn_chunk_cell_size)
 				var town : Node2D = town_and_tiles[0]
 				var tiles : Dictionary = town_and_tiles[1]
-				_place_town_tiles(tiles)
-				towns[chunk_position] = town
-				add_child(town)
 				
+				towns[chunk_position] = [town, tiles]
+				_place_town_tiles(tiles)
+				add_child(town)
 				town_added.emit(town)
 
 
@@ -55,10 +64,13 @@ func _remove_towns(visible_chunk_area : Rect2i) -> void:
 	# remove towns in non-visible chunks
 	for chunk_position in towns.keys():
 		if not visible_chunk_area.has_point(chunk_position):
-			print("remove: %v" % chunk_position)
+			print("remove town from chunk: %v" % chunk_position)
 			
-			var town = towns[chunk_position]
+			var town = towns[chunk_position][0]
+			var tiles = towns[chunk_position][1]
+			
 			towns.erase(chunk_position)
+			_remove_town_tiles(tiles)
 			remove_child(town)
 			
 			town_removed.emit(town)
@@ -71,11 +83,10 @@ func town_at(chunk_position : Vector2) -> bool:
 
 
 func to_chunk_position(cell_position : Vector2) -> Vector2i:
-	return TownSpawner.cell_to_chunk_position(self, cell_position, spawn_chunk_cell_size)
+	return TownSpawner.cell_to_chunk_position(cell_position, spawn_chunk_cell_size)
 
 
-static func cell_to_chunk_position(parent: Node2D, cell_position : Vector2, chunk_size : Vector2i) -> Vector2i:
-	var local_popsition_ := parent.to_local(cell_position)
-	var chunk_position : Vector2i = (local_popsition_ / Vector2(chunk_size)).floor()
+static func cell_to_chunk_position(cell_position : Vector2, chunk_size : Vector2i) -> Vector2i:
+	var chunk_position : Vector2i = (cell_position / Vector2(chunk_size)).floor()
 	return chunk_position
 

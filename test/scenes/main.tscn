@@ -1,56 +1,75 @@
-[gd_scene load_steps=14 format=3 uid="uid://medvp812sviv"]
+[gd_scene load_steps=15 format=3 uid="uid://medvp812sviv"]
 
-[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_pvdg5"]
-[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_0tp6h"]
-[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_d7api"]
-[ext_resource type="Resource" uid="uid://ddffuth882b12" path="res://test/resources/Tiles/grass_tile.tres" id="4_lon7c"]
-[ext_resource type="Resource" uid="uid://cqiyllnyrm467" path="res://test/resources/Tiles/water_tile.tres" id="5_33jq6"]
-[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="6_nmicl"]
-[ext_resource type="Script" path="res://test/scripts/quit.gd" id="7_6wd04"]
-[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="8_graef"]
-[ext_resource type="FastNoiseLite" uid="uid://bf1q2skx4l2e0" path="res://test/resources/Noise/random.tres" id="9_o46sj"]
-[ext_resource type="Script" path="res://scripts/town_generator.gd" id="10_p7pfv"]
-[ext_resource type="Resource" uid="uid://cce8y71mvatcc" path="res://test/resources/Tiles/path_tile.tres" id="11_3rb2y"]
-[ext_resource type="Script" path="res://scripts/tile_placement.gd" id="11_6p0p6"]
+[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_empr8"]
+[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_vtsyt"]
+[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_eywiu"]
+[ext_resource type="Resource" uid="uid://ddffuth882b12" path="res://test/resources/Tiles/grass_tile.tres" id="4_w6m71"]
+[ext_resource type="Resource" uid="uid://cqiyllnyrm467" path="res://test/resources/Tiles/water_tile.tres" id="5_cp2l5"]
+[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="6_x5u6u"]
+[ext_resource type="Script" path="res://test/scripts/quit.gd" id="7_ivdul"]
+[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="8_hfrkb"]
+[ext_resource type="FastNoiseLite" uid="uid://bf1q2skx4l2e0" path="res://test/resources/Noise/random.tres" id="9_v61lr"]
+[ext_resource type="Script" path="res://scripts/town_generator.gd" id="10_i1b3p"]
+[ext_resource type="Resource" uid="uid://cce8y71mvatcc" path="res://test/resources/Tiles/path_tile.tres" id="11_7wmxd"]
+[ext_resource type="Script" path="res://scripts/tile_placement.gd" id="12_f0p2r"]
+[ext_resource type="Script" path="res://test/scripts/camera_zoom.gd" id="13_yf1c8"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ienwp"]
 frequency = 0.015
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_pvdg5")
+script = ExtResource("1_empr8")
 
-[node name="TerrainMap" parent="." instance=ExtResource("2_0tp6h")]
-tile_set = ExtResource("3_d7api")
+[node name="TerrainMap" parent="." instance=ExtResource("2_vtsyt")]
+tile_set = ExtResource("3_eywiu")
+layer_0/name = "gen"
+layer_1/name = "ground"
+layer_1/enabled = true
+layer_1/modulate = Color(1, 1, 1, 1)
+layer_1/y_sort_enabled = false
+layer_1/y_sort_origin = 0
+layer_1/z_index = 0
+layer_1/tile_data = PackedInt32Array()
+layer_2/name = "object"
+layer_2/enabled = true
+layer_2/modulate = Color(1, 1, 1, 1)
+layer_2/y_sort_enabled = false
+layer_2/y_sort_origin = 0
+layer_2/z_index = 0
+layer_2/tile_data = PackedInt32Array()
 _noise = SubResource("FastNoiseLite_ienwp")
-_grass_tile = ExtResource("4_lon7c")
-_water_tile = ExtResource("5_33jq6")
+_grass_tile = ExtResource("4_w6m71")
+_water_tile = ExtResource("5_cp2l5")
 
-[node name="Player" parent="." instance=ExtResource("6_nmicl")]
+[node name="Player" parent="." instance=ExtResource("6_x5u6u")]
 motion_mode = 1
-speed = 700.0
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Quit" type="Node" parent="."]
-script = ExtResource("7_6wd04")
+script = ExtResource("7_ivdul")
 
 [node name="TownSpawner" type="Node2D" parent="." node_paths=PackedStringArray("town_generator", "tile_placement")]
-script = ExtResource("8_graef")
+script = ExtResource("8_hfrkb")
 spawn_chance = 0.5
 town_generator = NodePath("../TownGenerator")
 tile_placement = NodePath("../TilePlacement")
-random = ExtResource("9_o46sj")
+random = ExtResource("9_v61lr")
 
 [node name="TownGenerator" type="Node" parent="." node_paths=PackedStringArray("tile_map")]
-script = ExtResource("10_p7pfv")
-_grass_tile = ExtResource("4_lon7c")
-_water_tile = ExtResource("5_33jq6")
-_path_tile = ExtResource("11_3rb2y")
+script = ExtResource("10_i1b3p")
+_grass_tile = ExtResource("4_w6m71")
+_water_tile = ExtResource("5_cp2l5")
+_path_tile = ExtResource("11_7wmxd")
 tile_map = NodePath("../TerrainMap")
-random = ExtResource("9_o46sj")
+random = ExtResource("9_v61lr")
 
 [node name="TilePlacement" type="Node" parent="." node_paths=PackedStringArray("tile_map")]
-script = ExtResource("11_6p0p6")
+script = ExtResource("12_f0p2r")
 tile_map = NodePath("../TerrainMap")
-_grass_tile = ExtResource("4_lon7c")
-_water_tile = ExtResource("5_33jq6")
+_grass_tile = ExtResource("4_w6m71")
+_water_tile = ExtResource("5_cp2l5")
+
+[node name="CameraZoom" type="Node" parent="." node_paths=PackedStringArray("_camera")]
+script = ExtResource("13_yf1c8")
+_camera = NodePath("../Player/Camera2D")

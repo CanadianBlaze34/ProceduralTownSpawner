@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="TileBase" load_steps=2 format=3 uid="uid://cqiyllnyrm467"]
 
-[ext_resource type="Script" path="res://test/scripts/tile_base.gd" id="1_5a5nq"]
+[ext_resource type="Script" path="res://test/scripts/TerrainMap/tile_base.gd" id="1_5a5nq"]
+
 
 [resource]
 script = ExtResource("1_5a5nq")
