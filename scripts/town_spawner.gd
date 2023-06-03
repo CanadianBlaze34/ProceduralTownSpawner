@@ -4,6 +4,7 @@ class_name TownSpawner extends Node2D
 @export var spawn_chunk_cell_size := Vector2i.ONE * 50
 @export_range(0.0, 1.0, 0.01) var spawn_chance : float = 0.34
 @export var town_generator : TownGenerator
+@export var tile_placement : TilePlacement
 @export var random := FastNoiseLite.new()
 
 var towns : Dictionary = {}
@@ -22,6 +23,13 @@ func map_update(visible_cell_area : Rect2i) -> void:
 	_remove_towns(visible_chunk_area)
 
 
+func _place_town_tiles(tiles : Dictionary) -> void:
+	# parameters should have the tiles to place and the layers to place the tiles in
+	tile_placement.place_ground_tiles(tiles["ground"])
+#	tile_placement.place_object_tiles(town["object"])
+	pass
+
+
 func _spawn_towns(visible_chunk_area : Rect2i) -> void:
 	# check for any new chunks walked into and spawn a town
 	for y in range(visible_chunk_area.position.y, visible_chunk_area.end.y):
@@ -32,7 +40,11 @@ func _spawn_towns(visible_chunk_area : Rect2i) -> void:
 			if town_at(chunk_position) and not chunk_position in towns:
 				print("add: %v" % chunk_position)
 				
-				var town = town_generator.generate_town(chunk_position, spawn_chunk_cell_size)
+				
+				var town_and_tiles : Array = town_generator.generate_town(chunk_position, spawn_chunk_cell_size)
+				var town : Node2D = town_and_tiles[0]
+				var tiles : Dictionary = town_and_tiles[1]
+				_place_town_tiles(tiles)
 				towns[chunk_position] = town
 				add_child(town)
 				
