@@ -4,7 +4,11 @@ class_name TownGenerator extends Node
 @export var _water_tile : TileBase
 @export var _path_tile : TileBase
 @export var tile_map : TileMap
+@export var house_generation : HouseGeneration
 @export var random := FastNoiseLite.new()
+
+const ground_layer : String = "ground"
+const object_layer : String = "object"
 
 func _ready() -> void:
 #	_test()
@@ -20,23 +24,35 @@ func _test() -> void:
 	add_child(town)
 
 
-func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) -> Array:
+func generate_name() -> String:
 	var name_ : String = "Unamed Town"
+	return name_
+
+
+func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) -> Array:
+	# intilize town
 	var town := Node2D.new()
-	town.name = name_
+	town.name = generate_name()
 	
+	# area boundaries
 	var area : Area2D = _generate_town_boundary(chunk_position, spawn_chunk_cell_size)
 	area.name = "TownBoundary"
 	var collision : CollisionShape2D = area.get_child(0)
+	
+	# areas in different dimensions
 	var town_area := Rect2i(area.position, collision.shape.size)
 	var cell_area := Rect2i(town_area.position / tile_map.tile_set.tile_size, town_area.size / tile_map.tile_set.tile_size)
 	
 #	print("Town Area: ", town_area)
 #	print("Cell Area: ",cell_area)
 	
+	# Dictionary[TileBase, Array[Vector2i]]
+	# Dictionary[TileBase, cell_positions]
 	var grass_tiles : Dictionary = _fill_with_grass(cell_area)
+	var path_tiles : Dictionary = _generate_path(cell_area)
+	
 	var tiles : Dictionary = {
-		"ground" : grass_tiles,
+		ground_layer : grass_tiles,
 	}
 	
 	town.add_child(area)
@@ -45,15 +61,26 @@ func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) 
 	return [town, tiles]
 
 
+func _generate_path(cell_area : Rect2i) -> Dictionary:
+	var path_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]
+	
+	path_tiles[_path_tile] = []
+	
+	var sentenace : String = PathGenerator.generate()
+	print(sentenace)
+	
+	return path_tiles
+
+
 func _fill_with_grass(cell_area : Rect2i) -> Dictionary:
 	var grass_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]
 	
-	grass_tiles[_path_tile] = []
+	grass_tiles[_grass_tile] = []
 	
 	for y in range(cell_area.position.y, cell_area.end.y):
 		for x in range(cell_area.position.x, cell_area.end.x):
 			var map_position := Vector2i(x, y)
-			grass_tiles[_path_tile].append(map_position)
+			grass_tiles[_grass_tile].append(map_position)
 
 	return grass_tiles
 

@@ -7,6 +7,9 @@ class_name TownSpawner extends Node2D
 @export var tile_placement : TilePlacement
 @export var random := FastNoiseLite.new()
 
+const ground_layer : String = "ground"
+const object_layer : String = "object"
+
 var towns : Dictionary = {} 
 # Dictionary[Vector2i, Array[Node2D, Dictionary[TileBase, Array[Vector2i]]]]
 # towns[chunk_position, Array[town, tiles[TileBase, cell_positions]]]
@@ -28,15 +31,15 @@ func map_update(visible_cell_area : Rect2i) -> void:
 
 func _place_town_tiles(tiles : Dictionary) -> void:
 	# parameters should have the tiles to place and the layers to place the tiles in
-	tile_placement.place_tiles(tiles["ground"], "ground")
-#	tile_placement.place_tiles(tiles["object"], "object")
+	tile_placement.place_tiles(tiles[ground_layer], ground_layer)
+#	tile_placement.place_tiles(tiles[object_layer], object_layer)
 	pass
 
 
 func _remove_town_tiles(tiles : Dictionary) -> void:
 	# parameters should have the tiles to place and the layers to place the tiles in
-	tile_placement.remove_tiles(tiles["ground"], "ground")
-#	tile_placement.remove_tiles(tiles["object"], "object")
+	tile_placement.remove_tiles(tiles[ground_layer], ground_layer)
+#	tile_placement.remove_tiles(tiles[object_layer], object_layer)
 	pass
 
 
