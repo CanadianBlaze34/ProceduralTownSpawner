@@ -10,20 +10,6 @@ class_name TownGenerator extends Node
 const ground_layer : String = "ground"
 const object_layer : String = "object"
 
-func _ready() -> void:
-#	_test()
-	pass
-
-
-func _test() -> void:
-	var chunk_position := Vector2i(0, 0)
-	var spawn_chunk_cell_size := Vector2i(50, 50)
-	var town_and_tiles : Array = generate_town(chunk_position, spawn_chunk_cell_size)
-	var town : Node2D = town_and_tiles[0]
-#	var tiles : Dictionary = town_and_tiles[1]
-	add_child(town)
-
-
 func generate_name() -> String:
 	var name_ : String = "Unamed Town"
 	return name_
@@ -43,16 +29,19 @@ func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) 
 	var town_area := Rect2i(area.position, collision.shape.size)
 	var cell_area := Rect2i(town_area.position / tile_map.tile_set.tile_size, town_area.size / tile_map.tile_set.tile_size)
 	
-#	print("Town Area: ", town_area)
-#	print("Cell Area: ",cell_area)
+	
+	# areas used to generate the path tiles and spawn houses
+	var plot_areas : Array[Rect2i] = _generate_areas(cell_area)
 	
 	# Dictionary[TileBase, Array[Vector2i]]
 	# Dictionary[TileBase, cell_positions]
 	var grass_tiles : Dictionary = _fill_with_grass(cell_area)
-	var path_tiles : Dictionary = _generate_path(cell_area)
+	var path_tiles : Dictionary = _generate_path(plot_areas, cell_area)
+	var house_tiles : Dictionary = _generate_houses(plot_areas, cell_area)
 	
 	var tiles : Dictionary = {
-		ground_layer : grass_tiles,
+		ground_layer : [grass_tiles, path_tiles],
+		object_layer : [house_tiles]
 	}
 	
 	town.add_child(area)
@@ -61,16 +50,32 @@ func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) 
 	return [town, tiles]
 
 
-func _generate_path(cell_area : Rect2i) -> Dictionary:
+func _generate_areas(area : Rect2i) -> Array[Rect2i]:
+	var splits : int = randi_range(3, 5)
+	var min_area := Vector2i.ONE * randi_range(6, 8)
+	var ratio : float = randf_range(1.2, 1.4)
+	var BSP_areas : Array[Rect2i] = BinarySpacePartitioning.partition(area, splits, min_area, ratio)
+	return BSP_areas
+
+
+func _generate_path(areas : Array[Rect2i], cell_area : Rect2i) -> Dictionary:
 	var path_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]
 	
 	path_tiles[_path_tile] = []
 	
-	var sentenace : String = PathGenerator.generate()
-	print(sentenace)
+	var positions : PackedVector2Array = PathGenerator.border_inner_areas(areas, cell_area)
+	
+	for position_ in positions:
+		path_tiles[_path_tile].append(Vector2i(position_))
 	
 	return path_tiles
 
+func _generate_houses(areas : Array[Rect2i], cell_area : Rect2i) -> Dictionary:
+	var house_tiles : Dictionary # Dictionary[TileBase, Array[Vector2i]]
+	
+	house_tiles = house_generation.generate_houses(areas, cell_area)
+	
+	return house_tiles
 
 func _fill_with_grass(cell_area : Rect2i) -> Dictionary:
 	var grass_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]

@@ -1,30 +1,30 @@
 [gd_scene load_steps=18 format=3 uid="uid://medvp812sviv"]
 
-[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_qbleb"]
-[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_d3bw1"]
-[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_nd0xq"]
-[ext_resource type="Resource" uid="uid://ddffuth882b12" path="res://test/resources/Tiles/grass_tile.tres" id="4_eagig"]
-[ext_resource type="Resource" uid="uid://cqiyllnyrm467" path="res://test/resources/Tiles/water_tile.tres" id="5_3mohe"]
-[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="6_yl6ya"]
-[ext_resource type="Script" path="res://test/scripts/quit.gd" id="7_bidtx"]
-[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="8_pyc6v"]
-[ext_resource type="FastNoiseLite" uid="uid://bf1q2skx4l2e0" path="res://test/resources/Noise/random.tres" id="9_tb8h5"]
-[ext_resource type="Script" path="res://scripts/town_generator.gd" id="10_eabfl"]
-[ext_resource type="Resource" uid="uid://cce8y71mvatcc" path="res://test/resources/Tiles/path_tile.tres" id="11_1bi4l"]
-[ext_resource type="Script" path="res://scripts/tile_placement.gd" id="12_rd5ei"]
-[ext_resource type="Script" path="res://test/scripts/camera_zoom.gd" id="13_hblat"]
-[ext_resource type="Script" path="res://scripts/house_generation.gd" id="14_ukw0b"]
-[ext_resource type="Resource" uid="uid://c48slki20fqwg" path="res://test/resources/Tiles/wood_floor_tile.tres" id="15_j2587"]
-[ext_resource type="Resource" uid="uid://dosojsho04ptq" path="res://test/resources/Tiles/wood_wall_tile.tres" id="16_0e0vm"]
+[ext_resource type="Script" path="res://test/scripts/main.gd" id="1_iy00a"]
+[ext_resource type="PackedScene" uid="uid://3gk86d65v0xm" path="res://test/scenes/terrain_map.tscn" id="2_u3lll"]
+[ext_resource type="TileSet" uid="uid://dd4yhc7ie4xkg" path="res://test/resources/tile_set.tres" id="3_7ggfv"]
+[ext_resource type="Resource" uid="uid://ddffuth882b12" path="res://test/resources/Tiles/grass_tile.tres" id="4_oorol"]
+[ext_resource type="Resource" uid="uid://cqiyllnyrm467" path="res://test/resources/Tiles/water_tile.tres" id="5_1o1in"]
+[ext_resource type="PackedScene" uid="uid://k7lesi0dky3d" path="res://test/scenes/player.tscn" id="6_eob5x"]
+[ext_resource type="Script" path="res://test/scripts/camera_zoom.gd" id="7_8p7ft"]
+[ext_resource type="Script" path="res://test/scripts/quit.gd" id="8_4ppxh"]
+[ext_resource type="Script" path="res://scripts/town_spawner.gd" id="9_ygoew"]
+[ext_resource type="FastNoiseLite" uid="uid://bf1q2skx4l2e0" path="res://test/resources/Noise/random.tres" id="10_ehdif"]
+[ext_resource type="Script" path="res://scripts/town_generator.gd" id="11_d77yb"]
+[ext_resource type="Resource" uid="uid://cce8y71mvatcc" path="res://test/resources/Tiles/path_tile.tres" id="12_sh1j0"]
+[ext_resource type="Script" path="res://scripts/tile_placement.gd" id="13_ubyps"]
+[ext_resource type="Script" path="res://scripts/house_generation.gd" id="14_6d4et"]
+[ext_resource type="Resource" uid="uid://c48slki20fqwg" path="res://test/resources/Tiles/wood_floor_tile.tres" id="15_dt8y5"]
+[ext_resource type="Resource" uid="uid://dosojsho04ptq" path="res://test/resources/Tiles/wood_wall_tile.tres" id="16_orruv"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ienwp"]
 frequency = 0.015
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_qbleb")
+script = ExtResource("1_iy00a")
 
-[node name="TerrainMap" parent="." instance=ExtResource("2_d3bw1")]
-tile_set = ExtResource("3_nd0xq")
+[node name="TerrainMap" parent="." instance=ExtResource("2_u3lll")]
+tile_set = ExtResource("3_7ggfv")
 layer_0/name = "gen"
 layer_1/name = "ground"
 layer_1/enabled = true
@@ -41,44 +41,43 @@ layer_2/y_sort_origin = 0
 layer_2/z_index = 0
 layer_2/tile_data = PackedInt32Array()
 _noise = SubResource("FastNoiseLite_ienwp")
-_grass_tile = ExtResource("4_eagig")
-_water_tile = ExtResource("5_3mohe")
+_grass_tile = ExtResource("4_oorol")
+_water_tile = ExtResource("5_1o1in")
 
-[node name="Player" parent="." instance=ExtResource("6_yl6ya")]
+[node name="Player" parent="." instance=ExtResource("6_eob5x")]
 motion_mode = 1
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
+[node name="CameraZoom" type="Node" parent="Player/Camera2D"]
+script = ExtResource("7_8p7ft")
+
 [node name="Quit" type="Node" parent="."]
-script = ExtResource("7_bidtx")
+script = ExtResource("8_4ppxh")
 
 [node name="TownSpawner" type="Node2D" parent="." node_paths=PackedStringArray("town_generator", "tile_placement")]
-script = ExtResource("8_pyc6v")
+script = ExtResource("9_ygoew")
 spawn_chance = 0.5
 town_generator = NodePath("../TownGenerator")
 tile_placement = NodePath("../TilePlacement")
-random = ExtResource("9_tb8h5")
+random = ExtResource("10_ehdif")
 
 [node name="TownGenerator" type="Node" parent="." node_paths=PackedStringArray("tile_map", "house_generation")]
-script = ExtResource("10_eabfl")
-_grass_tile = ExtResource("4_eagig")
-_water_tile = ExtResource("5_3mohe")
-_path_tile = ExtResource("11_1bi4l")
+script = ExtResource("11_d77yb")
+_grass_tile = ExtResource("4_oorol")
+_water_tile = ExtResource("5_1o1in")
+_path_tile = ExtResource("12_sh1j0")
 tile_map = NodePath("../TerrainMap")
 house_generation = NodePath("../HouseGeneration")
-random = ExtResource("9_tb8h5")
+random = ExtResource("10_ehdif")
 
 [node name="TilePlacement" type="Node" parent="." node_paths=PackedStringArray("tile_map")]
-script = ExtResource("12_rd5ei")
+script = ExtResource("13_ubyps")
 tile_map = NodePath("../TerrainMap")
-_grass_tile = ExtResource("4_eagig")
-_water_tile = ExtResource("5_3mohe")
-
-[node name="CameraZoom" type="Node" parent="." node_paths=PackedStringArray("_camera")]
-script = ExtResource("13_hblat")
-_camera = NodePath("../Player/Camera2D")
+_grass_tile = ExtResource("4_oorol")
+_water_tile = ExtResource("5_1o1in")
 
 [node name="HouseGeneration" type="Node" parent="."]
-script = ExtResource("14_ukw0b")
-floor_tile = ExtResource("15_j2587")
-wall_tile = ExtResource("16_0e0vm")
+script = ExtResource("14_6d4et")
+floor_tile = ExtResource("15_dt8y5")
+wall_tile = ExtResource("16_orruv")

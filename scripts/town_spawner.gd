@@ -31,16 +31,18 @@ func map_update(visible_cell_area : Rect2i) -> void:
 
 func _place_town_tiles(tiles : Dictionary) -> void:
 	# parameters should have the tiles to place and the layers to place the tiles in
-	tile_placement.place_tiles(tiles[ground_layer], ground_layer)
-#	tile_placement.place_tiles(tiles[object_layer], object_layer)
-	pass
+	for ground_tiles in tiles[ground_layer]:
+		tile_placement.place_tiles(ground_tiles, ground_layer)
+	for objects_tiles in tiles[object_layer]:
+		tile_placement.place_tiles(objects_tiles, object_layer)
 
 
 func _remove_town_tiles(tiles : Dictionary) -> void:
 	# parameters should have the tiles to place and the layers to place the tiles in
-	tile_placement.remove_tiles(tiles[ground_layer], ground_layer)
-#	tile_placement.remove_tiles(tiles[object_layer], object_layer)
-	pass
+	for ground_tiles in tiles[ground_layer]:
+		tile_placement.remove_tiles(ground_tiles, ground_layer)
+	for objects_tiles in tiles[object_layer]:
+		tile_placement.remove_tiles(objects_tiles, object_layer)
 
 
 func _spawn_towns(visible_chunk_area : Rect2i) -> void:
@@ -51,7 +53,7 @@ func _spawn_towns(visible_chunk_area : Rect2i) -> void:
 			var chunk_position := Vector2i(x, y)
 			
 			if town_at(chunk_position) and not chunk_position in towns:
-				print("add town to chunk: %v" % chunk_position)
+				print("add town to chunk: (%d, %d)." % [chunk_position.x, chunk_position.y])
 				
 				var town_and_tiles : Array = town_generator.generate_town(chunk_position, spawn_chunk_cell_size)
 				var town : Node2D = town_and_tiles[0]
@@ -67,7 +69,7 @@ func _remove_towns(visible_chunk_area : Rect2i) -> void:
 	# remove towns in non-visible chunks
 	for chunk_position in towns.keys():
 		if not visible_chunk_area.has_point(chunk_position):
-			print("remove town from chunk: %v" % chunk_position)
+			print("remove town from chunk: (%d, %d)." % [chunk_position.x, chunk_position.y])
 			
 			var town = towns[chunk_position][0]
 			var tiles = towns[chunk_position][1]
