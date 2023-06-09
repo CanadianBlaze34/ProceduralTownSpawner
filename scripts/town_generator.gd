@@ -36,8 +36,10 @@ func generate_town(chunk_position : Vector2i, spawn_chunk_cell_size : Vector2i) 
 	# Dictionary[TileBase, Array[Vector2i]]
 	# Dictionary[TileBase, cell_positions]
 	var grass_tiles : Dictionary = _fill_with_grass(cell_area)
-	var path_tiles : Dictionary = _generate_path(plot_areas, cell_area)
-	var house_tiles : Dictionary = _generate_houses(plot_areas, cell_area)
+	var path_tiles_and_modified_areas : Array = _generate_path(plot_areas, cell_area)
+	var path_tiles : Dictionary = path_tiles_and_modified_areas[0]
+	var modified_areas : Array[Rect2i] = path_tiles_and_modified_areas[1]
+	var house_tiles : Dictionary = _generate_houses(modified_areas, cell_area)
 	
 	var tiles : Dictionary = {
 		ground_layer : [grass_tiles, path_tiles],
@@ -58,17 +60,21 @@ func _generate_areas(area : Rect2i) -> Array[Rect2i]:
 	return BSP_areas
 
 
-func _generate_path(areas : Array[Rect2i], cell_area : Rect2i) -> Dictionary:
+func _generate_path(areas : Array[Rect2i], cell_area : Rect2i) -> Array:
 	var path_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]
 	
 	path_tiles[_path_tile] = []
 	
-	var positions : PackedVector2Array = PathGenerator.border_inner_areas(areas, cell_area)
+	var positions_and_modified_areas : Array = PathGenerator.paths_and_areas(areas, cell_area)
+	var positions : PackedVector2Array = positions_and_modified_areas[0]
+	var modified_areas : Array[Rect2i] = positions_and_modified_areas[1] as Array[Rect2i]
+	
 	
 	for position_ in positions:
 		path_tiles[_path_tile].append(Vector2i(position_))
 	
-	return path_tiles
+	return [path_tiles, modified_areas]
+
 
 func _generate_houses(areas : Array[Rect2i], cell_area : Rect2i) -> Dictionary:
 	var house_tiles : Dictionary # Dictionary[TileBase, Array[Vector2i]]
@@ -76,6 +82,7 @@ func _generate_houses(areas : Array[Rect2i], cell_area : Rect2i) -> Dictionary:
 	house_tiles = house_generation.generate_houses(areas, cell_area)
 	
 	return house_tiles
+
 
 func _fill_with_grass(cell_area : Rect2i) -> Dictionary:
 	var grass_tiles : Dictionary = {} # Dictionary[TileBase, Array[Vector2i]]
